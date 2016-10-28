@@ -10,10 +10,10 @@
         layout="@layout/toolbar" />
 
     <ImageView
+        android:id="@+id/iv_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/toolbar"
-        android:scaleType="centerCrop"
-        android:src="@drawable/background" />
+        android:layout_below="@+id/toolbar" />
+
     <include layout="@layout/empty_drops" />
 </RelativeLayout>
