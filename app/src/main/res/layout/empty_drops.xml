@@ -9,7 +9,8 @@
         android:layout_height="@dimen/iv_logo_size"
         android:layout_centerHorizontal="true"
         android:layout_margin="@dimen/iv_logo_margin"
-        android:src="@drawable/logo_large" />
+        android:scaleType="matrix"
+        android:src="@android:drawable/sym_def_app_icon" />
 
     <Button
         android:id="@+id/btn_add"
