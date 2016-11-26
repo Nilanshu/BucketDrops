@@ -16,4 +16,10 @@
         android:layout_below="@+id/toolbar" />
 
     <include layout="@layout/empty_drops" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="getRealmData"
+        android:text="Check" />
 </RelativeLayout>

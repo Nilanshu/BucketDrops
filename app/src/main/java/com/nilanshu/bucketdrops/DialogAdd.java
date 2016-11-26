@@ -11,6 +11,10 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
+import com.nilanshu.bucketdrops.beans.Drop;
+
+import io.realm.Realm;
+
 /**
  * Created by Nilanshu on 24-Nov-16.
  */
@@ -24,11 +28,39 @@ public class DialogAdd extends DialogFragment {
     private View.OnClickListener mBtnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+
+            int id = v.getId();
+
+            switch (id) {
+                case R.id.btn_add_it:
+                    addAction();
+                    break;
+            }
             dismiss();
         }
     };
 
     public DialogAdd() {
+    }
+
+    //TODO process date
+    private void addAction() {
+        //get the value of the 'goal' or 'to-do;
+        //get the time when it was added
+        String what = mInputWhat.getText().toString();
+        long now = System.currentTimeMillis();
+        Realm.init(getActivity());
+//        RealmConfiguration configuration = new RealmConfiguration.Builder().build();
+//        Realm.setDefaultConfiguration(configuration);
+
+        Realm realm = Realm.getDefaultInstance();
+
+        Drop drop = new Drop(what, now, 0, false);
+
+        realm.beginTransaction();
+        realm.copyToRealm(drop);
+        realm.commitTransaction();
+        realm.close();
     }
 
     @Nullable
@@ -43,8 +75,9 @@ public class DialogAdd extends DialogFragment {
         mBtnClose = (ImageButton) view.findViewById(R.id.btn_close);
         mInputWhat = (EditText) view.findViewById(R.id.et_drop);
         mInputWhen = (DatePicker) view.findViewById(R.id.bpv_date);
-        mBtnAdd = (Button) view.findViewById(R.id.btn_add);
+        mBtnAdd = (Button) view.findViewById(R.id.btn_add_it);
 
         mBtnClose.setOnClickListener(mBtnClickListener);
+        mBtnAdd.setOnClickListener(mBtnClickListener);
     }
 }
