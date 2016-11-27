@@ -2,6 +2,7 @@ package com.nilanshu.bucketdrops;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -18,6 +19,7 @@ public class ActivityMain extends AppCompatActivity {
 
     Toolbar mToolbar;
     Button mBtnAdd;
+    RecyclerView mRecycler;
 
     private View.OnClickListener mBtnAddListener = new View.OnClickListener() {
         @Override
@@ -63,6 +65,7 @@ public class ActivityMain extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mBtnAdd = (Button) findViewById(R.id.btn_add);
+        mRecycler = (RecyclerView) findViewById(R.id.rv_drops);
 
         mBtnAdd.setOnClickListener(mBtnAddListener);
         setSupportActionBar(mToolbar);
