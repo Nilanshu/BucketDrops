@@ -49,7 +49,7 @@ public class DialogAdd extends DialogFragment {
         //get the time when it was added
         String what = mInputWhat.getText().toString();
         long now = System.currentTimeMillis();
-        Realm.init(getActivity());
+        // Realm.init(getActivity());
 //        RealmConfiguration configuration = new RealmConfiguration.Builder().build();
 //        Realm.setDefaultConfiguration(configuration);
 
