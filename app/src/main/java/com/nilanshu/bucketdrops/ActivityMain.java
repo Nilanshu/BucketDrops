@@ -11,6 +11,7 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.nilanshu.bucketdrops.adapters.AdapterDrops;
+import com.nilanshu.bucketdrops.adapters.AddListener;
 import com.nilanshu.bucketdrops.adapters.Divider;
 import com.nilanshu.bucketdrops.beans.Drop;
 import com.nilanshu.bucketdrops.widgets.BucketRecyclerView;
@@ -28,6 +29,12 @@ public class ActivityMain extends AppCompatActivity {
     Realm mRealm;
     AdapterDrops mAdapter;
     View mEmptyView;
+    private AddListener mAddListener = new AddListener() {
+        @Override
+        public void add() {
+            showDialogAdd();
+        }
+    };
 
     private View.OnClickListener mBtnAddListener = new View.OnClickListener() {
         @Override
@@ -91,7 +98,7 @@ public class ActivityMain extends AppCompatActivity {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mBtnAdd = (Button) findViewById(R.id.btn_add);
         mEmptyView = findViewById(R.id.empty_drops);
-        mAdapter = new AdapterDrops(this, mResults);
+        mAdapter = new AdapterDrops(this, mResults, mAddListener);
         mRecycler = (BucketRecyclerView) findViewById(R.id.rv_drops);
         mRecycler.hideIfEmpty(mToolbar);
         mRecycler.showIfEmpty(mEmptyView);
