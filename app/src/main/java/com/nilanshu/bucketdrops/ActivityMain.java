@@ -2,6 +2,7 @@ package com.nilanshu.bucketdrops;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.nilanshu.bucketdrops.adapters.AdapterDrops;
+import com.nilanshu.bucketdrops.adapters.Divider;
 import com.nilanshu.bucketdrops.beans.Drop;
 import com.nilanshu.bucketdrops.widgets.BucketRecyclerView;
 
@@ -94,6 +96,7 @@ public class ActivityMain extends AppCompatActivity {
         mRecycler.hideIfEmpty(mToolbar);
         mRecycler.showIfEmpty(mEmptyView);
         mRecycler.setAdapter(mAdapter);
+        mRecycler.addItemDecoration(new Divider(this, LinearLayoutManager.VERTICAL));
         mBtnAdd.setOnClickListener(mBtnAddListener);
 
         setSupportActionBar(mToolbar);
