@@ -11,12 +11,13 @@ import android.widget.TextView;
 import com.nilanshu.bucketdrops.R;
 import com.nilanshu.bucketdrops.beans.Drop;
 
+import io.realm.Realm;
 import io.realm.RealmResults;
 
 /**
  * Created by Nilanshu on 27-Nov-16.
  */
-public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements SwipeListener {
 
     public static final int ITEMS = 0;
     public static final int FOOTER = 1;
@@ -24,14 +25,17 @@ public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private LayoutInflater mInflater;
     private RealmResults<Drop> mResults;
     private AddListener mAddListener;
+    private Realm mRealm;
 
-    public AdapterDrops(Context context, RealmResults<Drop> results) {
+    public AdapterDrops(Context context, Realm realm, RealmResults<Drop> results) {
         mInflater = LayoutInflater.from(context);
+        mRealm = realm;
         update(results);
     }
 
-    public AdapterDrops(Context context, RealmResults<Drop> results, AddListener addListener) {
+    public AdapterDrops(Context context, Realm realm, RealmResults<Drop> results, AddListener addListener) {
         mInflater = LayoutInflater.from(context);
+        mRealm = realm;
         update(results);
         mAddListener = addListener;
     }
@@ -76,7 +80,21 @@ public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public int getItemCount() {
-        return mResults.size() + 1;//The +1 here specifies that their is a footer in the recyclerview
+        if (mResults == null || mResults.isEmpty()) {
+            return 0;
+        } else {
+            return mResults.size() + 1;//The +1 here specifies that their is a footer in the recyclerview
+        }
+    }
+
+    @Override
+    public void onSwipe(int position) {
+        if (position < mResults.size()) {
+            mRealm.beginTransaction();
+            mResults.get(position).deleteFromRealm();
+            mRealm.commitTransaction();
+            notifyItemRemoved(position);
+        }
     }
 
     public static class DropHolder extends RecyclerView.ViewHolder {

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -13,6 +14,7 @@ import com.bumptech.glide.Glide;
 import com.nilanshu.bucketdrops.adapters.AdapterDrops;
 import com.nilanshu.bucketdrops.adapters.AddListener;
 import com.nilanshu.bucketdrops.adapters.Divider;
+import com.nilanshu.bucketdrops.adapters.SimpleTouchCallback;
 import com.nilanshu.bucketdrops.beans.Drop;
 import com.nilanshu.bucketdrops.widgets.BucketRecyclerView;
 
@@ -98,13 +100,16 @@ public class ActivityMain extends AppCompatActivity {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mBtnAdd = (Button) findViewById(R.id.btn_add);
         mEmptyView = findViewById(R.id.empty_drops);
-        mAdapter = new AdapterDrops(this, mResults, mAddListener);
+        mAdapter = new AdapterDrops(this, mRealm, mResults, mAddListener);
         mRecycler = (BucketRecyclerView) findViewById(R.id.rv_drops);
         mRecycler.hideIfEmpty(mToolbar);
         mRecycler.showIfEmpty(mEmptyView);
         mRecycler.setAdapter(mAdapter);
         mRecycler.addItemDecoration(new Divider(this, LinearLayoutManager.VERTICAL));
         mBtnAdd.setOnClickListener(mBtnAddListener);
+        SimpleTouchCallback callback = new SimpleTouchCallback(mAdapter);
+        ItemTouchHelper helper = new ItemTouchHelper(callback);
+        helper.attachToRecyclerView(mRecycler);
 
         setSupportActionBar(mToolbar);
         initBackgroundImage();
