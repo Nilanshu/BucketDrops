@@ -13,7 +13,9 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.nilanshu.bucketdrops.adapters.AdapterDrops;
 import com.nilanshu.bucketdrops.adapters.AddListener;
+import com.nilanshu.bucketdrops.adapters.CompleteListener;
 import com.nilanshu.bucketdrops.adapters.Divider;
+import com.nilanshu.bucketdrops.adapters.MarkListener;
 import com.nilanshu.bucketdrops.adapters.SimpleTouchCallback;
 import com.nilanshu.bucketdrops.beans.Drop;
 import com.nilanshu.bucketdrops.widgets.BucketRecyclerView;
@@ -37,24 +39,43 @@ public class ActivityMain extends AppCompatActivity {
             showDialogAdd();
         }
     };
-
     private View.OnClickListener mBtnAddListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             showDialogAdd();
         }
     };
-
     private RealmChangeListener mChangeListener = new RealmChangeListener() {
         @Override
         public void onChange(Object element) {
             mAdapter.update(mResults);
         }
     };
+    private CompleteListener mCompleteListener = new CompleteListener() {
+        @Override
+        public void onComplete(int position) {
+            mAdapter.markComplete(position);
+        }
+    };
+    private MarkListener mMarkListener = new MarkListener() {
+        @Override
+        public void onMark(int position) {
+            showDialogMark(position);
+        }
+    };
 
     private void showDialogAdd() {
         DialogAdd dialog = new DialogAdd();
         dialog.show(getSupportFragmentManager(), "Add");
+    }
+
+    private void showDialogMark(int position) {
+        DialogMark dialog = new DialogMark();
+        Bundle bundle = new Bundle();
+        bundle.putInt("POSITION", position);
+        dialog.setArguments(bundle);
+        dialog.setCompleteListener(mCompleteListener);
+        dialog.show(getSupportFragmentManager(), "Mark");
     }
 
     public void getRealmData(View view) {
@@ -100,7 +121,7 @@ public class ActivityMain extends AppCompatActivity {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mBtnAdd = (Button) findViewById(R.id.btn_add);
         mEmptyView = findViewById(R.id.empty_drops);
-        mAdapter = new AdapterDrops(this, mRealm, mResults, mAddListener);
+        mAdapter = new AdapterDrops(this, mRealm, mResults, mAddListener, mMarkListener);
         mRecycler = (BucketRecyclerView) findViewById(R.id.rv_drops);
         mRecycler.hideIfEmpty(mToolbar);
         mRecycler.showIfEmpty(mEmptyView);

@@ -1,6 +1,8 @@
 package com.nilanshu.bucketdrops.adapters;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +12,7 @@ import android.widget.TextView;
 
 import com.nilanshu.bucketdrops.R;
 import com.nilanshu.bucketdrops.beans.Drop;
+import com.nilanshu.bucketdrops.extras.Util;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -21,7 +24,7 @@ public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     public static final int ITEMS = 0;
     public static final int FOOTER = 1;
-
+    private MarkListener mMarkListener;
     private LayoutInflater mInflater;
     private RealmResults<Drop> mResults;
     private AddListener mAddListener;
@@ -33,11 +36,12 @@ public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         update(results);
     }
 
-    public AdapterDrops(Context context, Realm realm, RealmResults<Drop> results, AddListener addListener) {
+    public AdapterDrops(Context context, Realm realm, RealmResults<Drop> results, AddListener addListener, MarkListener markListener) {
         mInflater = LayoutInflater.from(context);
         mRealm = realm;
         update(results);
         mAddListener = addListener;
+        mMarkListener = markListener;
     }
 
     @Override
@@ -62,7 +66,7 @@ public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             return new FooterHolder(view, mAddListener);
         } else {
             View view = mInflater.inflate(R.layout.row_drop, parent, false);
-            return new DropHolder(view);
+            return new DropHolder(view, mMarkListener);
         }
 
     }
@@ -72,7 +76,8 @@ public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         if (holder instanceof DropHolder) {
             DropHolder dropHolder = (DropHolder) holder;
             Drop drop = mResults.get(position);
-            dropHolder.mTextWhat.setText(drop.getWhat());
+            dropHolder.setWhat(drop.getWhat());
+            dropHolder.setBackground(drop.isCompleted());
         }
 
 
@@ -97,13 +102,51 @@ public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
     }
 
-    public static class DropHolder extends RecyclerView.ViewHolder {
+    public void markComplete(int position) {
+        if (position < mResults.size()) {
+            mRealm.beginTransaction();
+            mResults.get(position).setCompleted(true);
+            mRealm.commitTransaction();
+            notifyItemChanged(position);
+        }
+
+    }
+
+    public static class DropHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         TextView mTextWhat;
+        TextView mTextWhen;
+        MarkListener mMarkListener;
+        Context mContext;
+        View mItemView;
 
-        public DropHolder(View itemView) {
+        public DropHolder(View itemView, MarkListener listener) {
             super(itemView);
+            mContext = itemView.getContext();
+            itemView.setOnClickListener(this);
             mTextWhat = (TextView) itemView.findViewById(R.id.tv_what);
+            mTextWhen = (TextView) itemView.findViewById(R.id.tv_when);
+            mMarkListener = listener;
+            mItemView = itemView;
+        }
+
+        public void setWhat(String what) {
+            mTextWhat.setText(what);
+        }
+
+        @Override
+        public void onClick(View v) {
+            mMarkListener.onMark(getAdapterPosition());
+        }
+
+        public void setBackground(boolean completed) {
+            Drawable drawable;
+            if (completed) {
+                drawable = ContextCompat.getDrawable(mContext, R.color.bg_drop_complete);
+            } else {
+                drawable = ContextCompat.getDrawable(mContext, R.drawable.bg_row_drop);
+            }
+            Util.setBackground(mItemView, drawable);
         }
     }
 
