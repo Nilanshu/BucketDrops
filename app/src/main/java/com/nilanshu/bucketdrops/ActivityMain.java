@@ -190,6 +190,7 @@ public class ActivityMain extends AppCompatActivity {
         mBtnAdd = (Button) findViewById(R.id.btn_add);
         mEmptyView = findViewById(R.id.empty_drops);
         mAdapter = new AdapterDrops(this, mRealm, mResults, mAddListener, mMarkListener);
+        mAdapter.setHasStableIds(true);
         mRecycler = (BucketRecyclerView) findViewById(R.id.rv_drops);
         mRecycler.hideIfEmpty(mToolbar);
         mRecycler.showIfEmpty(mEmptyView);

@@ -84,6 +84,14 @@ public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         notifyDataSetChanged();
     }
 
+    @Override
+    public long getItemId(int position) {
+        if (position < mResults.size()) {
+            return mResults.get(position).getAdded();
+        }
+        return RecyclerView.NO_ID;
+    }
+
     //The viewType in onCreateViewHolder is returned by the function getItemViewType
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
