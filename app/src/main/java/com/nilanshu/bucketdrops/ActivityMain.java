@@ -1,5 +1,6 @@
 package com.nilanshu.bucketdrops;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,6 +18,7 @@ import com.nilanshu.bucketdrops.adapters.AdapterDrops;
 import com.nilanshu.bucketdrops.adapters.AddListener;
 import com.nilanshu.bucketdrops.adapters.CompleteListener;
 import com.nilanshu.bucketdrops.adapters.Divider;
+import com.nilanshu.bucketdrops.adapters.Filter;
 import com.nilanshu.bucketdrops.adapters.MarkListener;
 import com.nilanshu.bucketdrops.adapters.SimpleTouchCallback;
 import com.nilanshu.bucketdrops.beans.Drop;
@@ -25,6 +27,7 @@ import com.nilanshu.bucketdrops.widgets.BucketRecyclerView;
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
+import io.realm.Sort;
 
 public class ActivityMain extends AppCompatActivity {
 
@@ -80,7 +83,70 @@ public class ActivityMain extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        return super.onOptionsItemSelected(item);
+        boolean handled = true;
+        int filterOption = Filter.NONE;
+        switch (id) {
+            case R.id.action_add:
+                showDialogAdd();
+                break;
+            case R.id.action_sort_ascending_date:
+                filterOption = Filter.LEAST_TIME_LEFT;
+                save(Filter.LEAST_TIME_LEFT);
+
+                break;
+            case R.id.action_sort_descending_date:
+                filterOption = Filter.MOST_TIME_LEFT;
+                save(Filter.MOST_TIME_LEFT);
+                break;
+            case R.id.action_show_complete:
+                filterOption = Filter.COMPLETE;
+                save(Filter.COMPLETE);
+                break;
+            case R.id.action_show_incomplete:
+                filterOption = Filter.INCOMPLETE;
+                save(Filter.INCOMPLETE);
+                break;
+            default:
+                handled = false;
+                break;
+        }
+        loadResults(filterOption);
+        return handled;
+    }
+
+    private void save(int filterOption) {
+        SharedPreferences pref = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putInt("filter", filterOption);
+        editor.apply();
+    }
+
+    private int load() {
+        SharedPreferences pref = getPreferences(MODE_PRIVATE);
+        int filterOption = pref.getInt("filter", Filter.NONE);
+        return filterOption;
+    }
+
+    private void loadResults(int filterOption) {
+        switch (filterOption) {
+            case Filter.NONE:
+                mResults = mRealm.where(Drop.class).findAllAsync();
+                break;
+            case Filter.LEAST_TIME_LEFT:
+                mResults = mRealm.where(Drop.class).findAllSortedAsync("when");
+                break;
+            case Filter.MOST_TIME_LEFT:
+                mResults = mRealm.where(Drop.class).findAllSortedAsync("when", Sort.DESCENDING);
+                break;
+            case Filter.COMPLETE:
+                mResults = mRealm.where(Drop.class).equalTo("completed", true).findAllAsync();
+                break;
+            case Filter.INCOMPLETE:
+                mResults = mRealm.where(Drop.class).equalTo("completed", false).findAllAsync();
+                break;
+        }
+        mResults.addChangeListener(mChangeListener);
+        //ChangeListener is added again because new object of mResults is being created in the query
     }
 
     private void showDialogMark(int position) {
@@ -131,7 +197,8 @@ public class ActivityMain extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mRealm = Realm.getDefaultInstance();
-        mResults = mRealm.where(Drop.class).findAllAsync();
+        int filterOption = load();
+        loadResults(filterOption);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mBtnAdd = (Button) findViewById(R.id.btn_add);
         mEmptyView = findViewById(R.id.empty_drops);
