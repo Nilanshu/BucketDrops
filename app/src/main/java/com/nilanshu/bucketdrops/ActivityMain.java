@@ -196,6 +196,7 @@ public class ActivityMain extends AppCompatActivity {
         mRecycler.showIfEmpty(mEmptyView);
         mRecycler.setAdapter(mAdapter);
         mRecycler.addItemDecoration(new Divider(this, LinearLayoutManager.VERTICAL));
+        //mRecycler.setItemAnimator(new DefaultItemAnimator());//its the same animation which is displayed if only setHasStableIds is set true
         mBtnAdd.setOnClickListener(mBtnAddListener);
         SimpleTouchCallback callback = new SimpleTouchCallback(mAdapter);
         ItemTouchHelper helper = new ItemTouchHelper(callback);
