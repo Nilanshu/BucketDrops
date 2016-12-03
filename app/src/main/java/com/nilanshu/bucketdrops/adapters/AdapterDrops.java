@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.nilanshu.bucketdrops.AppBucketDrops;
 import com.nilanshu.bucketdrops.R;
 import com.nilanshu.bucketdrops.beans.Drop;
 import com.nilanshu.bucketdrops.extras.Util;
@@ -23,39 +24,63 @@ import io.realm.RealmResults;
  */
 public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements SwipeListener {
 
+    public static final int COUNT_FOOTER = 1;
+    public static final int COUNT_NO_ITEMS = 1;
     public static final int ITEMS = 0;
-    public static final int FOOTER = 1;
+    public static final int NO_ITEM = 1;
+    public static final int FOOTER = 2;
     private MarkListener mMarkListener;
     private LayoutInflater mInflater;
     private RealmResults<Drop> mResults;
     private AddListener mAddListener;
     private Realm mRealm;
+    private int mFilterOption;
+    private Context mContext;
 
     public AdapterDrops(Context context, Realm realm, RealmResults<Drop> results) {
         mInflater = LayoutInflater.from(context);
         mRealm = realm;
+
+        mContext = context;
         update(results);
     }
 
     public AdapterDrops(Context context, Realm realm, RealmResults<Drop> results, AddListener addListener, MarkListener markListener) {
         mInflater = LayoutInflater.from(context);
         mRealm = realm;
-        update(results);
+
         mAddListener = addListener;
         mMarkListener = markListener;
+        mContext = context;
+        update(results);
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (mResults == null || position < mResults.size()) {
-            return ITEMS;
+        if (!mResults.isEmpty()) {
+            if (position < mResults.size()) {
+                return ITEMS;
+            } else {
+                return FOOTER;
+            }
         } else {
-            return FOOTER;
+            if (mFilterOption == Filter.COMPLETE
+                    || mFilterOption == Filter.INCOMPLETE) {
+                if (position == 0) {
+                    return NO_ITEM;
+                } else {
+                    return FOOTER;
+                }
+            } else//getItemViewType will never go to this else condition because there will be no item available to get its view type.
+            {
+                return ITEMS;
+            }
         }
     }
 
     public void update(RealmResults<Drop> results) {
         mResults = results;
+        mFilterOption = AppBucketDrops.load(mContext);
         notifyDataSetChanged();
     }
 
@@ -65,6 +90,9 @@ public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         if (viewType == FOOTER) {
             View view = mInflater.inflate(R.layout.footer, parent, false);
             return new FooterHolder(view, mAddListener);
+        } else if (viewType == NO_ITEM) {
+            View view = mInflater.inflate(R.layout.no_item, parent, false);
+            return new NoItemsHolder(view);
         } else {
             View view = mInflater.inflate(R.layout.row_drop, parent, false);
             return new DropHolder(view, mMarkListener);
@@ -87,10 +115,16 @@ public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public int getItemCount() {
-        if (mResults == null || mResults.isEmpty()) {
-            return 0;
+        if (!mResults.isEmpty()) {
+            return mResults.size() + COUNT_FOOTER;
         } else {
-            return mResults.size() + 1;//The +1 here specifies that their is a footer in the recyclerview
+            if (mFilterOption == Filter.LEAST_TIME_LEFT
+                    || mFilterOption == Filter.MOST_TIME_LEFT
+                    || mFilterOption == Filter.NONE) {
+                return 0;
+            } else {
+                return COUNT_NO_ITEMS + COUNT_FOOTER;
+            }
         }
     }
 
@@ -171,6 +205,13 @@ public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         @Override
         public void onClick(View v) {
             mListener.add();
+        }
+    }
+
+    public static class NoItemsHolder extends RecyclerView.ViewHolder {
+
+        public NoItemsHolder(View itemView) {
+            super(itemView);
         }
     }
 }
