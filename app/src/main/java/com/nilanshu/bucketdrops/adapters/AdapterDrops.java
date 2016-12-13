@@ -29,6 +29,7 @@ public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     public static final int ITEMS = 0;
     public static final int NO_ITEM = 1;
     public static final int FOOTER = 2;
+    private final ResetListener mResetListener;
     private MarkListener mMarkListener;
     private LayoutInflater mInflater;
     private RealmResults<Drop> mResults;
@@ -37,18 +38,10 @@ public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private int mFilterOption;
     private Context mContext;
 
-    public AdapterDrops(Context context, Realm realm, RealmResults<Drop> results) {
+    public AdapterDrops(Context context, Realm realm, RealmResults<Drop> results, AddListener addListener, MarkListener markListener, ResetListener resetListener) {
         mInflater = LayoutInflater.from(context);
         mRealm = realm;
-
-        mContext = context;
-        update(results);
-    }
-
-    public AdapterDrops(Context context, Realm realm, RealmResults<Drop> results, AddListener addListener, MarkListener markListener) {
-        mInflater = LayoutInflater.from(context);
-        mRealm = realm;
-
+        mResetListener = resetListener;
         mAddListener = addListener;
         mMarkListener = markListener;
         mContext = context;
@@ -140,10 +133,22 @@ public class AdapterDrops extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     public void onSwipe(int position) {
         if (position < mResults.size()) {
             mRealm.beginTransaction();
-            mResults.get(position).deleteFromRealm();
+            mResults.deleteFromRealm(position);
             mRealm.commitTransaction();
             notifyItemRemoved(position);
+            mResults.isValid();
         }
+        resetFilterIfEmpty();
+    }
+
+    private void resetFilterIfEmpty() {
+        if (mResults.size() == 0 && (mFilterOption == Filter.COMPLETE || mFilterOption == Filter.INCOMPLETE)) {
+            mResetListener.onReset();
+        }
+//        else if(mResults.size()==1 && (mFilterOption == Filter.COMPLETE || mFilterOption == Filter.INCOMPLETE) && mResults.get(0).getAdded() == 0)
+//        {
+//            mResetListener.onReset();
+//        }
     }
 
     public void markComplete(int position) {

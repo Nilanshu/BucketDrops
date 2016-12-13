@@ -19,6 +19,7 @@ import com.nilanshu.bucketdrops.adapters.CompleteListener;
 import com.nilanshu.bucketdrops.adapters.Divider;
 import com.nilanshu.bucketdrops.adapters.Filter;
 import com.nilanshu.bucketdrops.adapters.MarkListener;
+import com.nilanshu.bucketdrops.adapters.ResetListener;
 import com.nilanshu.bucketdrops.adapters.SimpleTouchCallback;
 import com.nilanshu.bucketdrops.beans.Drop;
 import com.nilanshu.bucketdrops.widgets.BucketRecyclerView;
@@ -65,6 +66,14 @@ public class ActivityMain extends AppCompatActivity {
         @Override
         public void onMark(int position) {
             showDialogMark(position);
+        }
+    };
+
+    private ResetListener mResetListener = new ResetListener() {
+        @Override
+        public void onReset() {
+            AppBucketDrops.save(ActivityMain.this, Filter.NONE);
+            loadResults(Filter.NONE);
         }
     };
 
@@ -189,7 +198,7 @@ public class ActivityMain extends AppCompatActivity {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mBtnAdd = (Button) findViewById(R.id.btn_add);
         mEmptyView = findViewById(R.id.empty_drops);
-        mAdapter = new AdapterDrops(this, mRealm, mResults, mAddListener, mMarkListener);
+        mAdapter = new AdapterDrops(this, mRealm, mResults, mAddListener, mMarkListener, mResetListener);
         mAdapter.setHasStableIds(true);
         mRecycler = (BucketRecyclerView) findViewById(R.id.rv_drops);
         mRecycler.hideIfEmpty(mToolbar);
