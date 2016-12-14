@@ -32,21 +32,21 @@ public class BucketPickerView extends LinearLayout implements View.OnTouchListen
     private TextView mTextMonth;
     private TextView mTextYear;
     private SimpleDateFormat mFormatter;
-    private boolean mIncreament;
-    private boolean mDecreament;
+    private boolean mIncrement;
+    private boolean mDecrement;
     private int MESSAGE_WHAT = 123;
     private int mActiveId;
 
     private Handler mHandler = new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(Message msg) {
-            if (mIncreament) {
+            if (mIncrement) {
                 increment(mActiveId);
             }
-            if (mDecreament) {
+            if (mDecrement) {
                 decrement(mActiveId);
             }
-            if (mIncreament || mDecreament) {
+            if (mIncrement || mDecrement) {
                 mHandler.sendEmptyMessageDelayed(MESSAGE_WHAT, DELAY);
             }
             return true;
@@ -134,27 +134,32 @@ public class BucketPickerView extends LinearLayout implements View.OnTouchListen
             mActiveId = textView.getId();
             if (topDrawableHit(textView, topBounds.height(), x, y)) {
                 if (isActionDown(event)) {
-                    mIncreament = true;
+                    mIncrement = true;
+                    toggleDrawable(textView, true);
                     increment(textView.getId());
                     mHandler.removeMessages(MESSAGE_WHAT);
                     mHandler.sendEmptyMessageDelayed(MESSAGE_WHAT, DELAY);
                 }
                 if (isActionUpOrCancel(event)) {
-                    mIncreament = false;
+                    mIncrement = false;
+                    toggleDrawable(textView, false);
                 }
             } else if (bottomDrawableHit(textView, bottomBounds.height(), x, y)) {
                 if (isActionDown(event)) {
-                    mDecreament = true;
+                    mDecrement = true;
+                    toggleDrawable(textView, true);
                     decrement(textView.getId());
                     mHandler.removeMessages(MESSAGE_WHAT);
                     mHandler.sendEmptyMessageDelayed(MESSAGE_WHAT, DELAY);
                 }
                 if (isActionUpOrCancel(event)) {
-                    mDecreament = false;
+                    mDecrement = false;
+                    toggleDrawable(textView, false);
                 }
             } else {
-                mIncreament = false;
-                mDecreament = false;
+                mIncrement = false;
+                mDecrement = false;
+                toggleDrawable(textView, false);
             }
         }
     }
@@ -227,5 +232,18 @@ public class BucketPickerView extends LinearLayout implements View.OnTouchListen
 
     private boolean hasDrawableBottom(Drawable[] drawables) {
         return drawables[BOTTOM] != null;
+    }
+
+    private void toggleDrawable(TextView textView, boolean pressed) {
+        if (pressed) {
+            if (mIncrement) {
+                textView.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.up_pressed, 0, R.drawable.down_normal);
+            }
+            if (mDecrement) {
+                textView.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.up_normal, 0, R.drawable.down_pressed);
+            }
+        } else {
+            textView.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.up_normal, 0, R.drawable.down_normal);
+        }
     }
 }
