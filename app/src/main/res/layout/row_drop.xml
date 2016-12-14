@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:background="@drawable/bg_row_drop"
     android:orientation="horizontal"
-    android:padding="22dp">
+    android:padding="@dimen/row_drop_padding">
 
     <ImageView
         android:layout_width="@dimen/iv_drop_size"

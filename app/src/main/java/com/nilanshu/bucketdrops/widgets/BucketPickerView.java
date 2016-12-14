@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.nilanshu.bucketdrops.AppBucketDrops;
 import com.nilanshu.bucketdrops.R;
 
 import java.text.SimpleDateFormat;
@@ -85,6 +86,7 @@ public class BucketPickerView extends LinearLayout implements View.OnTouchListen
         mTextDate = (TextView) this.findViewById(R.id.tv_date); //we are using 'this' because this class extends LinearLayout
         mTextMonth = (TextView) this.findViewById(R.id.tv_month);
         mTextYear = (TextView) this.findViewById(R.id.tv_year);
+        AppBucketDrops.setRalewayRegular(getContext(), mTextDate, mTextMonth, mTextYear);
         mTextDate.setOnTouchListener(this);
         mTextMonth.setOnTouchListener(this);
         mTextYear.setOnTouchListener(this);
