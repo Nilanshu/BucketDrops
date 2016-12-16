@@ -11,4 +11,7 @@
     <string name="action_incomplete">Incomplete</string>
     <string name="str_no_items">No Items to Display</string>
     <string name="action_none">None</string>
+    <string name="notif_title">Achievement</string>
+    <string name="notif_message">You are nearing your goal.</string>
+    <string name="notif_long_message">Congratulations, You are on the verge of accomplishing your goal.</string>
 </resources>
