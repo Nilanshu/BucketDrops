@@ -5,7 +5,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -153,32 +152,6 @@ public class ActivityMain extends AppCompatActivity {
         dialog.setArguments(bundle);
         dialog.setCompleteListener(mCompleteListener);
         dialog.show(getSupportFragmentManager(), "Mark");
-    }
-
-    public void getRealmData(View view) {
-
-        Log.d(" log ", " inside getRealmData ");
-
-        //get the configuration
-
-//        RealmConfiguration configuration = new RealmConfiguration.Builder().build();
-//
-//        //set the real configuration
-//        Realm.setDefaultConfiguration(configuration);
-
-        //get an instance of realm
-        Realm realm = Realm.getDefaultInstance();
-
-        RealmResults<Drop> allDrops = realm.where(Drop.class).findAll();
-
-        for (Drop drop : allDrops) {
-
-            Log.d(" log ", " what is it: " + drop.getWhat().toString());
-            Log.d(" log ", " added : " + drop.getAdded());
-            Log.d(" log ", " Completed : " + drop.isCompleted());
-
-        }
-
     }
 
     @Override
