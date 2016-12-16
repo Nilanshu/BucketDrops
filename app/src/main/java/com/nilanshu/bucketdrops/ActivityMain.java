@@ -1,8 +1,5 @@
 package com.nilanshu.bucketdrops;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,7 +13,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.nilanshu.bucketdrops.Services.NotificationService;
 import com.nilanshu.bucketdrops.adapters.AdapterDrops;
 import com.nilanshu.bucketdrops.adapters.AddListener;
 import com.nilanshu.bucketdrops.adapters.CompleteListener;
@@ -26,6 +22,7 @@ import com.nilanshu.bucketdrops.adapters.MarkListener;
 import com.nilanshu.bucketdrops.adapters.ResetListener;
 import com.nilanshu.bucketdrops.adapters.SimpleTouchCallback;
 import com.nilanshu.bucketdrops.beans.Drop;
+import com.nilanshu.bucketdrops.extras.Util;
 import com.nilanshu.bucketdrops.widgets.BucketRecyclerView;
 
 import io.realm.Realm;
@@ -217,11 +214,8 @@ public class ActivityMain extends AppCompatActivity {
 
         setSupportActionBar(mToolbar);
         initBackgroundImage();
+        Util.scheduleAlarm(this);
 
-        AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        Intent intent = new Intent(this, NotificationService.class);
-        PendingIntent pendingIntent = PendingIntent.getService(this, 100, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        manager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, 1000, 5000, pendingIntent);
     }
 
     @Override
